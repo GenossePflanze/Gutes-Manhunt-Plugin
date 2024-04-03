@@ -13,23 +13,19 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import static de.Der_Mark_.Manhunt.PluginDatenVerwalten.ladeDaten;
+import static de.Der_Mark_.Manhunt.PluginDatenVerwalten.speichereDaten;
+import static de.Der_Mark_.Manhunt.WichtigeDaten.welcherBlockWarBevorLeitsteinHier;
+import static de.Der_Mark_.Manhunt.WichtigeDaten.wessenKompassZeigtAufWenGerade;
+
 public class ManhuntMain extends JavaPlugin {
+    public static int ANZAHL_TOTE_SPEEDRUNNER_FÜR_HUNTER_SIEG = 1;
+    public static boolean ALLE_SPEEDRUNNER_MÜSSEN_BESIEGT_WERDEN = true;
+    public static boolean KOMPASS_ZEIGT_ZU_PORTAL = true;
+
     public static ManhuntMain plugin;
     ConfigurationManager configManager;
-
-    public static ArrayList<String> speedrunnerListe = new ArrayList<>();
-    public static ArrayList<String> hunterListe = new ArrayList<>();
-    public static ArrayList<String> gestorbeneSpeedrunnerListe = new ArrayList<>();
-    public static HashMap<String, String> wessenKompassZeigtAufWenGerade = new HashMap<>();
-    public static HashMap<Location, Material> welcherBlockWarBevorLeitsteinHier = new HashMap<>();
-    public static HashMap<String, Location> letztePostitionDesSpeedrunnersInOberwelt = new HashMap<>();
-    public static HashMap<String, Location> letztePostitionDesSpeedrunnersImNether = new HashMap<>();
-    public static HashMap<String, Location> letztePostitionDesSpeedrunnersImEnde = new HashMap<>();
-    public static HashMap<String, Location> zugangsPostitionDesHuntersInOberwelt = new HashMap<>();
-    public static HashMap<String, Location> zugangsPostitionDesHuntersInNether = new HashMap<>();
-    public static HashMap<String, Location> zugangsPostitionDesHuntersInEnde = new HashMap<>();
-    public static Boolean siegFürSpeedrunner;
-    public static Boolean endeWurdeBetreten = false;
+    public static long seed;
 
     public static String PLUGIN_PREFIX = ChatColor.DARK_RED + "[" + ChatColor.GREEN + "Manhunt-Plugin" + ChatColor.DARK_RED + "] ";
     public static String PRIVATE_NACHRICHT_NORMAL =  PLUGIN_PREFIX + ChatColor.GREEN;
@@ -42,17 +38,21 @@ public class ManhuntMain extends JavaPlugin {
         plugin = this;
         configManager = new ConfigurationManager(getDataFolder(), "config.yml", this);
         configManager.load();
+        seed = this.getServer().getWorlds().get(0).getSeed();
+        PluginDatenVerwalten.datenOrdnerPfad = "plugins/GutesManhuntPlugin/WorldSeed" + seed + "/";
 
-        new SpeedrunnerTodListener(this);
-        new EnderdrachenTodListener(this);
-        new GestorbeneSpeedrunnerNichtAlsErstesInsEnde(this);
-        new KompassZielWechseln(this);
-        new AntiLeitsteinZerstörung(this);
-        new KompassFürRespawnteHunter(this);
-        new KompassFürNeuGejointeHunter(this);
-        new KompassTracktErstenGejointenSpeedrunner(this);
-        new LetztesPortalEinesSpielersSpeichern(this);
+        listenerRegistrieren();
 
+        befehleRegistrieren();
+
+        parseValues();
+
+        ladeDaten(this.getServer());
+
+        kompasseAktualisieren();
+    }
+
+    private void befehleRegistrieren() {
         ZuweisungsBefehle zuweisungsBefehle = new ZuweisungsBefehle(this);
         this.getCommand("speedrunner_add").setExecutor(zuweisungsBefehle);
         this.getCommand("hunter_add").setExecutor(zuweisungsBefehle);
@@ -62,12 +62,20 @@ public class ManhuntMain extends JavaPlugin {
         this.getCommand("gestorbener_speedrunner_remove").setExecutor(zuweisungsBefehle);
         this.getCommand("switch_kompasszeigtzuportal").setExecutor(zuweisungsBefehle);
         this.getCommand("change_anzahltotespeedrunnerfürhuntersieg").setExecutor(zuweisungsBefehle);
+        this.getCommand("manhunt_spielernamen_austauschen").setExecutor(zuweisungsBefehle);
+    }
 
-        parseValues();
-
-        ladeEndeBetreten();
-
-        kompasseAktualisieren();
+    private void listenerRegistrieren() {
+        new SpeedrunnerTodListener(this);
+        new EnderdrachenTodListener(this);
+        new GestorbeneSpeedrunnerNichtAlsErstesInsEnde(this);
+        new KompassZielWechseln(this);
+        new AntiLeitsteinZerstörung(this);
+        new KompassFürRespawnteHunter(this);
+        new KompassFürNeuGejointeHunter(this);
+        new KompassTracktErstenGejointenSpeedrunner(this);
+        new LetztesPortalEinesSpielersSpeichern(this);
+        new WillkommensNachricht(this);
     }
 
     private void kompasseAktualisieren() {
@@ -77,7 +85,7 @@ public class ManhuntMain extends JavaPlugin {
                 //Alte Leitsteine entfernen:
                 AlteLeitsteineEntfernen();
 
-                for (String hunterName : hunterListe) {
+                for (String hunterName : WichtigeDaten.hunterListe) {
                     Player hunter = plugin.getServer().getPlayer(hunterName);
                     boolean hunterOnline = hunter != null;
                     if(hunterOnline) {
@@ -91,7 +99,7 @@ public class ManhuntMain extends JavaPlugin {
                         Location leitsteinLoc = null;
                         if(anvisierterSpeedrunnerOnline) {
                             World world = hunter.getWorld();
-                            if (world == anvisierterSpeedrunner.getWorld() || ManhuntMain.KOMPASS_ZEIGT_ZU_PORTAL) {
+                            if (world == anvisierterSpeedrunner.getWorld() || KOMPASS_ZEIGT_ZU_PORTAL) {
                                 //Neuen Leitstein setzen:
                                 Location speedrunnerOderPortalLoc = speedrunnerOderPortalLoc(anvisierterSpeedrunner, hunter);
                                 if (!world.getEnvironment().equals(World.Environment.THE_END)) {
@@ -148,20 +156,20 @@ public class ManhuntMain extends JavaPlugin {
         Location portalLoc = null;
         switch (hunter.getWorld().getEnvironment()) {
             case NORMAL:
-                portalLoc =  letztePostitionDesSpeedrunnersInOberwelt.get(anvisierterSpeedrunner.getName());
+                portalLoc =  WichtigeDaten.letztePostitionDesSpeedrunnersInOberwelt.get(anvisierterSpeedrunner.getName());
                 break;
             case NETHER:
-                portalLoc =  letztePostitionDesSpeedrunnersImNether.get(anvisierterSpeedrunner.getName());
+                portalLoc =  WichtigeDaten.letztePostitionDesSpeedrunnersImNether.get(anvisierterSpeedrunner.getName());
                 break;
             case THE_END:
-                portalLoc =  letztePostitionDesSpeedrunnersImEnde.get(anvisierterSpeedrunner.getName());
+                portalLoc =  WichtigeDaten.letztePostitionDesSpeedrunnersImEnde.get(anvisierterSpeedrunner.getName());
                 break;
         }
         if (portalLoc != null) {return portalLoc; }
         switch (hunter.getWorld().getEnvironment()) {
-            case NORMAL: return zugangsPostitionDesHuntersInOberwelt.get(hunter.getName());
-            case NETHER: return zugangsPostitionDesHuntersInNether.get(hunter.getName());
-            case THE_END: return zugangsPostitionDesHuntersInEnde.get(hunter.getName());
+            case NORMAL: return WichtigeDaten.zugangsPostitionDesHuntersInOberwelt.get(hunter.getName());
+            case NETHER: return WichtigeDaten.zugangsPostitionDesHuntersInNether.get(hunter.getName());
+            case THE_END: return WichtigeDaten.zugangsPostitionDesHuntersInEnde.get(hunter.getName());
         }
 
         Bukkit.broadcastMessage(GLOBALE_NACHRICHT_FEHLSCHLAG + "ManhuntMain.speedrunnerOderPortalLoc: Dieser Fall sollte nicht eintreten. " +
@@ -201,7 +209,7 @@ public class ManhuntMain extends JavaPlugin {
             hunter.sendMessage(ManhuntMain.PRIVATE_NACHRICHT_FEHLSCHLAG + "Dein Kompass würde jetzt auf " + speedrunnerName + " zeigen, " +
                     "aber " + speedrunnerName + " ist gerade nicht auf dem Server.");
         } else {
-            if(nunVerfolgterSpeedrunner.getWorld() != hunter.getWorld() && !ManhuntMain.KOMPASS_ZEIGT_ZU_PORTAL) {
+            if(nunVerfolgterSpeedrunner.getWorld() != hunter.getWorld() && !KOMPASS_ZEIGT_ZU_PORTAL) {
                 hunter.sendMessage(ManhuntMain.PRIVATE_NACHRICHT_FEHLSCHLAG + "Dein Kompass würde jetzt auf " + speedrunnerName + " zeigen, " +
                         "aber " + speedrunnerName + " ist in einer anderen Dimension.");
             } else {
@@ -210,43 +218,11 @@ public class ManhuntMain extends JavaPlugin {
         }
     }
 
-    public void speichereEndeBetreten() {
-        File file = new File(getDataFolder(), "endeWurdeBetreten.yml");
-        if(!file.exists()) {
-            file.getParentFile().mkdirs();
-            saveResource("endeWurdeBetreten.yml", false);
-        }
-        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-        yaml.set("endeWurdeBetreten", endeWurdeBetreten.toString());
-        try {
-            yaml.save(file);
-        } catch (IOException e) {
-
-        }
-    }
-
-    public void ladeEndeBetreten() {
-        File file = new File(getDataFolder(), "endeWurdeBetreten.yml");
-        if(!file.exists()) {
-            file.getParentFile().mkdirs();
-            saveResource("endeWurdeBetreten.yml", false);
-        }
-        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-        endeWurdeBetreten = Boolean.parseBoolean(yaml.getString("endeWurdeBetreten"));
-        try {
-            yaml.save(file);
-        } catch (IOException e) {
-
-        }
-    }
-
-    public static int ANZAHL_TOTE_SPEEDRUNNER_FÜR_HUNTER_SIEG = 1;
-    public static boolean KOMPASS_ZEIGT_ZU_PORTAL = true;
-
     public void parseValues() {
         try {
-            ANZAHL_TOTE_SPEEDRUNNER_FÜR_HUNTER_SIEG = Integer.parseInt(getConfig().getString("anzahlToteSpeedrunnerFürHunterSieg"));
             KOMPASS_ZEIGT_ZU_PORTAL = Boolean.parseBoolean(getConfig().getString("kompassZeigtZuPortal"));
+            ALLE_SPEEDRUNNER_MÜSSEN_BESIEGT_WERDEN = Boolean.parseBoolean(getConfig().getString("alleSpeedrunnerMüssenBesiegtWerden"));
+            ANZAHL_TOTE_SPEEDRUNNER_FÜR_HUNTER_SIEG = Integer.parseInt(getConfig().getString("anzahlToteSpeedrunnerFürHunterSieg"));
         } catch (NumberFormatException e) {
             e.printStackTrace();
             Bukkit.getConsoleSender().sendMessage("MESSAGE GHGJFESFES");
@@ -257,7 +233,7 @@ public class ManhuntMain extends JavaPlugin {
     public void onDisable() {
         //Alte Leitsteine entfernen:
         AlteLeitsteineEntfernen();
-        speichereEndeBetreten();
+        speichereDaten();
     }
 }
 

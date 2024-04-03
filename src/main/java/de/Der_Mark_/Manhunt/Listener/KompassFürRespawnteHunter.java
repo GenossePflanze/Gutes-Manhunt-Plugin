@@ -1,6 +1,7 @@
 package de.Der_Mark_.Manhunt.Listener;
 
 import de.Der_Mark_.Manhunt.ManhuntMain;
+import de.Der_Mark_.Manhunt.WichtigeDaten;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,7 +20,7 @@ public class KompassFürRespawnteHunter implements Listener {
     public void onHunterRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         //Code-Abbruch, wenn Spieler kein Hunter ist
-        if(!ManhuntMain.hunterListe.contains(player.getName())) {
+        if(!WichtigeDaten.hunterListe.contains(player.getName())) {
             return;
         }
         player.getInventory().addItem(new ItemStack(Material.COMPASS, 1));

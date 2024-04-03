@@ -8,6 +8,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import static de.Der_Mark_.Manhunt.WichtigeDaten.*;
+
 public class SpeedrunnerTodListener implements Listener {
     ManhuntMain plugin;
     public SpeedrunnerTodListener(ManhuntMain plugin) {
@@ -18,21 +20,21 @@ public class SpeedrunnerTodListener implements Listener {
     @EventHandler
     public void onSpeedrunnerDeath(PlayerDeathEvent event) {
         //Code-Abbruch, wenn Spiel schon entschieden ist
-        if(ManhuntMain.siegFürSpeedrunner != null) {
+        if(siegFürSpeedrunner != null) {
             return;
         }
         final Player player = event.getEntity();
         //Code-Abbruch, wenn gestorbener Spieler kein Speedrunner ist
-        if(!ManhuntMain.speedrunnerListe.contains(player.getName())) {
+        if(!speedrunnerListe.contains(player.getName())) {
             return;
         }
         //Code-Abbruch, wenn Spieler schon einmal gestorben ist
-        if(ManhuntMain.gestorbeneSpeedrunnerListe.contains(player.getName())) {
+        if(gestorbeneSpeedrunnerListe.contains(player.getName())) {
             return;
         }
 
-        ManhuntMain.gestorbeneSpeedrunnerListe.add(player.getName());
-        final int anzahlVerbleibendeSpeedrunner = ManhuntMain.speedrunnerListe.size() - ManhuntMain.gestorbeneSpeedrunnerListe.size();
+        gestorbeneSpeedrunnerListe_add(player.getName());
+        final int anzahlVerbleibendeSpeedrunner = speedrunnerListe.size() - gestorbeneSpeedrunnerListe.size();
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -46,16 +48,16 @@ public class SpeedrunnerTodListener implements Listener {
                                     anzahlVerbleibendeSpeedrunner + " Speedrunner verbleiben.");
                         }
                     } else {
-                        ManhuntMain.siegFürSpeedrunner = false;
+                        setSiegFürSpeedrunner(false);
                         Bukkit.broadcastMessage(ManhuntMain.GLOBALE_NACHRICHT_NORMAL + player.getName() + " ist als letzter verbleibender Speedrunner gestorben, somit haben die Hunter gewonnen!!!");
                     }
                 } else if (ManhuntMain.ANZAHL_TOTE_SPEEDRUNNER_FÜR_HUNTER_SIEG == 1) {
-                    ManhuntMain.siegFürSpeedrunner = false;
+                    setSiegFürSpeedrunner(false);
                     Bukkit.broadcastMessage(ManhuntMain.GLOBALE_NACHRICHT_NORMAL + "Speedrunner " + player.getName() + " gestorben, somit haben die Hunter gewonnen!!!");
                 } else {
-                    int anzahlNochZuBesiegendeSpeedrunner = ManhuntMain.ANZAHL_TOTE_SPEEDRUNNER_FÜR_HUNTER_SIEG - ManhuntMain.gestorbeneSpeedrunnerListe.size();
+                    int anzahlNochZuBesiegendeSpeedrunner = ManhuntMain.ANZAHL_TOTE_SPEEDRUNNER_FÜR_HUNTER_SIEG - gestorbeneSpeedrunnerListe.size();
                     if (anzahlNochZuBesiegendeSpeedrunner <= 0) {
-                        ManhuntMain.siegFürSpeedrunner = false;
+                        setSiegFürSpeedrunner(false);
                         Bukkit.broadcastMessage(ManhuntMain.GLOBALE_NACHRICHT_NORMAL + "Der " + ManhuntMain.ANZAHL_TOTE_SPEEDRUNNER_FÜR_HUNTER_SIEG +
                                 ". Speedrunner " + player.getName() + " ist gestorben, somit haben die Hunter gewonnen!!!");
                     } else {
@@ -71,6 +73,6 @@ public class SpeedrunnerTodListener implements Listener {
     }
 
     private boolean alleSpeedrunnerMüssenBesiegtWerden() {
-        return ManhuntMain.ANZAHL_TOTE_SPEEDRUNNER_FÜR_HUNTER_SIEG >= ManhuntMain.speedrunnerListe.size();
+        return ManhuntMain.ALLE_SPEEDRUNNER_MÜSSEN_BESIEGT_WERDEN || ManhuntMain.ANZAHL_TOTE_SPEEDRUNNER_FÜR_HUNTER_SIEG >= speedrunnerListe.size();
     }
 }

@@ -8,6 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 
+import static de.Der_Mark_.Manhunt.WichtigeDaten.*;
+
 public class EnderdrachenTodListener implements Listener {
     ManhuntMain plugin;
     public EnderdrachenTodListener(ManhuntMain plugin) {
@@ -18,7 +20,7 @@ public class EnderdrachenTodListener implements Listener {
     @EventHandler
     public void onEnderdrachenTod(EntityDeathEvent event) {
         //Code-Abbruch, wenn Spiel schon entschieden ist
-        if(ManhuntMain.siegFürSpeedrunner != null) {
+        if(siegFürSpeedrunner != null) {
             return;
         }
         LivingEntity livingEntity = event.getEntity();
@@ -26,7 +28,7 @@ public class EnderdrachenTodListener implements Listener {
         if(!(livingEntity instanceof EnderDragon)) {
             return;
         }
-        ManhuntMain.siegFürSpeedrunner = true;
+        setSiegFürSpeedrunner(true);
         Bukkit.broadcastMessage(ManhuntMain.GLOBALE_NACHRICHT_NORMAL + "Der Enderdrache ist tot, somit haben die Speedrunner gewonnen!!!");
     }
 }

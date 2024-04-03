@@ -1,16 +1,17 @@
 package de.Der_Mark_.Manhunt.Listener;
 
 import de.Der_Mark_.Manhunt.ManhuntMain;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import de.Der_Mark_.Manhunt.WichtigeDaten;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+
+import static de.Der_Mark_.Manhunt.WichtigeDaten.speedrunnerListe;
+import static de.Der_Mark_.Manhunt.WichtigeDaten.wessenKompassZeigtAufWenGerade;
 
 public class KompassZielWechseln implements Listener {
     ManhuntMain plugin;
@@ -27,7 +28,7 @@ public class KompassZielWechseln implements Listener {
             return;
         }
         //Code-Abbruch, wenn Spieler kein Hunter ist
-        if (!ManhuntMain.hunterListe.contains(player.getName())) {
+        if (!WichtigeDaten.hunterListe.contains(player.getName())) {
             return;
         }
         //Code-Abbruch, wenn Spieler keinen Kompass in der Hand hat
@@ -42,27 +43,27 @@ public class KompassZielWechseln implements Listener {
             return;
         }
         //Code-Abbruch mit Fehlermeldung, wenn keine Speedrunner vorhanden
-        if (ManhuntMain.speedrunnerListe.size() == 0) {
+        if (speedrunnerListe.size() == 0) {
             player.sendMessage( ManhuntMain.PRIVATE_NACHRICHT_FEHLSCHLAG + "Du kannst kein Ziel auswählen, da es aktuell noch keine Speedrunner gibt.");
             return;
         }
-        String zuvorVerfolgterSpeedrunner_Name = ManhuntMain.wessenKompassZeigtAufWenGerade.get(player.getName());
+        String zuvorVerfolgterSpeedrunner_Name = wessenKompassZeigtAufWenGerade.get(player.getName());
         int zuvorVerfolgterSpeedrunner_Index = -1;
         String speedrunnerName;
-        for (int i = 0; i < ManhuntMain.speedrunnerListe.size(); i++) {
-            speedrunnerName = ManhuntMain.speedrunnerListe.get(i);
+        for (int i = 0; i < speedrunnerListe.size(); i++) {
+            speedrunnerName = speedrunnerListe.get(i);
             if(speedrunnerName.equals(zuvorVerfolgterSpeedrunner_Name)) {
                 zuvorVerfolgterSpeedrunner_Index = i;
             }
         }
         int neuerSpeedrunnerIndex;
-        if(zuvorVerfolgterSpeedrunner_Index == ManhuntMain.speedrunnerListe.size() - 1) {
+        if(zuvorVerfolgterSpeedrunner_Index == speedrunnerListe.size() - 1) {
             neuerSpeedrunnerIndex = 0;
         } else {
             neuerSpeedrunnerIndex = zuvorVerfolgterSpeedrunner_Index + 1;
         }
-        String nunVerfolgterSpeedrunner_Name = ManhuntMain.speedrunnerListe.get(neuerSpeedrunnerIndex);
-        ManhuntMain.wessenKompassZeigtAufWenGerade.put(player.getName(), nunVerfolgterSpeedrunner_Name);
+        String nunVerfolgterSpeedrunner_Name = speedrunnerListe.get(neuerSpeedrunnerIndex);
+        WichtigeDaten.wessenKompassZeigtAufWenGerade_put(player.getName(), nunVerfolgterSpeedrunner_Name);
         //Nachricht:
         ManhuntMain.aufWenZeigtKompassNachricht(player.getName(), nunVerfolgterSpeedrunner_Name);
     }

@@ -8,6 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import static de.Der_Mark_.Manhunt.WichtigeDaten.*;
+
 public class LetztesPortalEinesSpielersSpeichern implements Listener {
     ManhuntMain plugin;
     public LetztesPortalEinesSpielersSpeichern(ManhuntMain plugin) {
@@ -28,30 +30,30 @@ public class LetztesPortalEinesSpielersSpeichern implements Listener {
             return;
         }
         //PreTeleport-Position von Speedrunnern speichern:
-        if (ManhuntMain.speedrunnerListe.contains(player.getName())) {
+        if (speedrunnerListe.contains(player.getName())) {
             switch (altePos.getWorld().getEnvironment()) {
                 case NORMAL:
-                    ManhuntMain.letztePostitionDesSpeedrunnersInOberwelt.put(player.getName(), altePos);
+                    letztePostitionDesSpeedrunnersInOberwelt_put(player.getName(), altePos);
                     break;
                 case NETHER:
-                    ManhuntMain.letztePostitionDesSpeedrunnersImNether.put(player.getName(), altePos);
+                    letztePostitionDesSpeedrunnersImNether_put(player.getName(), altePos);
                     break;
                 case THE_END:
-                    ManhuntMain.letztePostitionDesSpeedrunnersImEnde.put(player.getName(), altePos);
+                    letztePostitionDesSpeedrunnersImEnde_put(player.getName(), altePos);
                     break;
             }
         }
         //PostTeleport-Position von Huntern speichern:
-        if (ManhuntMain.hunterListe.contains(player.getName())) {
+        if (hunterListe.contains(player.getName())) {
             switch (event.getTo().getWorld().getEnvironment()) {
                 case NORMAL:
-                    ManhuntMain.zugangsPostitionDesHuntersInOberwelt.put(player.getName(), event.getTo());
+                    zugangsPostitionDesHuntersInOberwelt_put(player.getName(), event.getTo());
                     break;
                 case NETHER:
-                    ManhuntMain.zugangsPostitionDesHuntersInNether.put(player.getName(), event.getTo());
+                    zugangsPostitionDesHuntersInNether_put(player.getName(), event.getTo());
                     break;
                 case THE_END:
-                    ManhuntMain.zugangsPostitionDesHuntersInEnde.put(player.getName(), event.getTo());
+                    zugangsPostitionDesHuntersInEnde_put(player.getName(), event.getTo());
                     break;
             }
         }

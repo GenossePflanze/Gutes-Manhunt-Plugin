@@ -1,6 +1,7 @@
 package de.Der_Mark_.Manhunt.Listener;
 
 import de.Der_Mark_.Manhunt.ManhuntMain;
+import de.Der_Mark_.Manhunt.WichtigeDaten;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -31,7 +32,7 @@ public class AntiLeitsteinZerstörung implements Listener {
         }
         Location loc = block.getLocation();
         //Code-Abbruch, wenn der Leitstein nicht zu einem Speedrunner gehört
-        if (!ManhuntMain.welcherBlockWarBevorLeitsteinHier.containsKey(loc)) {
+        if (!WichtigeDaten.welcherBlockWarBevorLeitsteinHier.containsKey(loc)) {
             return;
         }
 
@@ -71,7 +72,7 @@ public class AntiLeitsteinZerstörung implements Listener {
         for(int i = 0; i < event.blockList().size(); i++) {
             Block gesprengterBlock = event.blockList().get(i);
             loc = gesprengterBlock.getLocation();
-            if (ManhuntMain.welcherBlockWarBevorLeitsteinHier.containsKey(loc)) {
+            if (WichtigeDaten.welcherBlockWarBevorLeitsteinHier.containsKey(loc)) {
                 event.blockList().remove(gesprengterBlock);
             }
         }
@@ -83,7 +84,7 @@ public class AntiLeitsteinZerstörung implements Listener {
         for(int i = 0; i < event.blockList().size(); i++) {
             Block gesprengterBlock = event.blockList().get(i);
             loc = gesprengterBlock.getLocation();
-            if (ManhuntMain.welcherBlockWarBevorLeitsteinHier.containsKey(loc)) {
+            if (WichtigeDaten.welcherBlockWarBevorLeitsteinHier.containsKey(loc)) {
                 event.blockList().remove(gesprengterBlock);
             }
         }
