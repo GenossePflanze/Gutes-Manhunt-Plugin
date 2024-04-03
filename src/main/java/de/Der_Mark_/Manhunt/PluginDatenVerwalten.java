@@ -84,6 +84,9 @@ public class PluginDatenVerwalten {
         HashMap<String, Boolean> wichtigeBoolscheWerte = ladeHashMapMitStringsAlsSchlüssel("wichtigeBoolscheWerte");
         siegFürSpeedrunner = wichtigeBoolscheWerte.get("siegFürSpeedrunner");
         endeWurdeBetreten = wichtigeBoolscheWerte.get("endeWurdeBetreten");
+        if (endeWurdeBetreten == null) {
+            endeWurdeBetreten = false;
+        }
 
         welcherBlockWarBevorLeitsteinHier = ladeHashMapMitLocationAlsSchlüssel("welcherBlockWarBevorLeitsteinHier");
     }

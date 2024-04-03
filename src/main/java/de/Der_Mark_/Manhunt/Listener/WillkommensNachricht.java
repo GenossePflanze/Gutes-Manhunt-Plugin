@@ -1,7 +1,6 @@
 package de.Der_Mark_.Manhunt.Listener;
 
 import de.Der_Mark_.Manhunt.ManhuntMain;
-import de.Der_Mark_.Manhunt.WichtigeDaten;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -26,7 +25,7 @@ public class WillkommensNachricht implements Listener {
         if (siegFürSpeedrunner != null && !siegFürSpeedrunner) {
             siegesNachricht = "Die Hunter haben bereits gewonnen.";
         }
-        if (siegFürSpeedrunner == null && endeWurdeBetreten) {
+        if (siegFürSpeedrunner == null && endeWurdeBetreten != null && endeWurdeBetreten) {
             siegesNachricht = "Das Ende wurde bereits betreten, aber noch ist kein Sieg entschieden.";
         }
         event.getPlayer().sendMessage(ManhuntMain.PRIVATE_NACHRICHT_FEHLSCHLAG + "\n" + teilnehmerAufzählung() + "\n" + siegesNachricht);
