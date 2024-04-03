@@ -19,8 +19,8 @@ public class WillkommensNachricht implements Listener {
 
     @EventHandler
     public void onSpielerBetrittServer(PlayerJoinEvent event) {
-        String siegesNachricht = null;
-        if (siegFürSpeedrunner) {
+        String siegesNachricht = "";
+        if (siegFürSpeedrunner != null && siegFürSpeedrunner) {
             siegesNachricht = "Die Speedrunner haben bereits gewonnen.";
         }
         if (siegFürSpeedrunner != null && !siegFürSpeedrunner) {
