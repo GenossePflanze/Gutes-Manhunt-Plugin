@@ -25,6 +25,7 @@ public class WichtigeDaten {
 
     public static Boolean siegFürSpeedrunner;
     public static Boolean endeWurdeBetreten = false;
+    public static Boolean manhuntPause = true;
 
     //wird nur beim Serverstopp gespeichert und geht beim Absturz verloren... müsste sonst aber zu oft gespeichert werden
     public static HashMap<Location, Material> welcherBlockWarBevorLeitsteinHier = new HashMap<>();
@@ -94,13 +95,18 @@ public class WichtigeDaten {
         speichereListe(zugangsPostitionDesHuntersInEnde, "zugangsPostitionDesHuntersInEnde");
     }
 
-    public static void setSiegFürSpeedrunner(Boolean speedrunnerHabenGewonnen) {
-        siegFürSpeedrunner = speedrunnerHabenGewonnen;
+    public static void setSiegFürSpeedrunner(Boolean siegFürSpeedrunner) {
+        WichtigeDaten.siegFürSpeedrunner = siegFürSpeedrunner;
         wichtigeBoolscheWerteSpeichern();
     }
 
-    public static void setEndeWurdeBetreten(Boolean endeWurdeGeradeBetreten) {
-        endeWurdeBetreten = endeWurdeGeradeBetreten;
+    public static void setEndeWurdeBetreten(Boolean endeWurdeBetreten) {
+        WichtigeDaten.endeWurdeBetreten = endeWurdeBetreten;
+        wichtigeBoolscheWerteSpeichern();
+    }
+
+    public static void setManhuntPause(Boolean manhuntPause) {
+        WichtigeDaten.manhuntPause = manhuntPause;
         wichtigeBoolscheWerteSpeichern();
     }
 }

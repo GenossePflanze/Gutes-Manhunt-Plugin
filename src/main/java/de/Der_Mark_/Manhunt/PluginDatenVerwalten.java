@@ -1,5 +1,6 @@
 package de.Der_Mark_.Manhunt;
 
+import de.Der_Mark_.Manhunt.Listener.ManhuntPausenListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -12,6 +13,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import static de.Der_Mark_.Manhunt.Listener.ManhuntPausenListener.startManhuntPause;
+import static de.Der_Mark_.Manhunt.Listener.ManhuntPausenListener.startManhuntSpiel;
 import static de.Der_Mark_.Manhunt.WichtigeDaten.*;
 
 public class PluginDatenVerwalten {
@@ -45,6 +48,7 @@ public class PluginDatenVerwalten {
         HashMap<String, Boolean> wichtigeBoolscheWerte = new HashMap<>();
         wichtigeBoolscheWerte.put("siegFürSpeedrunner", siegFürSpeedrunner);
         wichtigeBoolscheWerte.put("endeWurdeBetreten", endeWurdeBetreten);
+        wichtigeBoolscheWerte.put("manhuntPause", manhuntPause);
         speichereListe(wichtigeBoolscheWerte,"wichtigeBoolscheWerte");
     }
 
@@ -66,7 +70,7 @@ public class PluginDatenVerwalten {
         }
     }
 
-    public static void ladeDaten(Server server) {
+    public static void ladeDatenUndSetzeSpielmodus(Server server) {
         // Überprüfe, ob die Daten in der Datei vorhanden sind, andernfalls erstelle neue Listen/Klasse
         speedrunnerListe = ladeArrayList("speedrunnerListe");
         hunterListe = ladeArrayList("hunterListe");
@@ -87,8 +91,19 @@ public class PluginDatenVerwalten {
         if (endeWurdeBetreten == null) {
             endeWurdeBetreten = false;
         }
+        manhuntPause = wichtigeBoolscheWerte.get("manhuntPause");
+        if (manhuntPause == null) {
+            manhuntPause = true;
+        }
 
         welcherBlockWarBevorLeitsteinHier = ladeHashMapMitLocationAlsSchlüssel("welcherBlockWarBevorLeitsteinHier");
+
+        //Setze Modus:
+        if (manhuntPause) {
+            startManhuntPause(server);
+        } else {
+            startManhuntSpiel(server);
+        }
     }
 
     private static  <T> ArrayList<T> ladeArrayList(String arrayListName) {

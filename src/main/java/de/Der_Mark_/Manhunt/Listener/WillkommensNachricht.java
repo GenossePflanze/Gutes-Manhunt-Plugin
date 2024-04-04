@@ -5,8 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import static de.Der_Mark_.Manhunt.WichtigeDaten.endeWurdeBetreten;
-import static de.Der_Mark_.Manhunt.WichtigeDaten.siegFürSpeedrunner;
+import static de.Der_Mark_.Manhunt.WichtigeDaten.*;
 import static de.Der_Mark_.Manhunt.ZuweisungsBefehle.teilnehmerAufzählung;
 
 public class WillkommensNachricht implements Listener {
@@ -29,5 +28,8 @@ public class WillkommensNachricht implements Listener {
             siegesNachricht = "Das Ende wurde bereits betreten, aber noch ist kein Sieg entschieden.";
         }
         event.getPlayer().sendMessage(ManhuntMain.PRIVATE_NACHRICHT_FEHLSCHLAG + "\n" + teilnehmerAufzählung() + "\n" + siegesNachricht);
+        if (manhuntPause) {
+            event.getPlayer().sendMessage(ManhuntMain.PRIVATE_NACHRICHT_FEHLSCHLAG + "Spielgeschehen pausiert.");
+        }
     }
 }

@@ -13,6 +13,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static de.Der_Mark_.Manhunt.Listener.ManhuntPausenListener.startManhuntPause;
+import static de.Der_Mark_.Manhunt.Listener.ManhuntPausenListener.startManhuntSpiel;
 import static de.Der_Mark_.Manhunt.Nützliches.getKeysByValue;
 import static de.Der_Mark_.Manhunt.WichtigeDaten.*;
 
@@ -204,7 +206,7 @@ public class ZuweisungsBefehle implements CommandExecutor {
                 }
                 sender.sendMessage(ManhuntMain.PRIVATE_NACHRICHT_NORMAL + "anzahlToteSpeedrunnerFürHunterSieg: " + ManhuntMain.ANZAHL_TOTE_SPEEDRUNNER_FÜR_HUNTER_SIEG + " gespeichert");
                 return true;
-            } else if (command.getName().equalsIgnoreCase("manhunt_spielernamen_austauschen")) {
+            } else if (command.getName().equalsIgnoreCase("spielernamen_austauschen")) {
                 if (args.length < 2) {
                     sender.sendMessage(ManhuntMain.PRIVATE_NACHRICHT_FEHLSCHLAG + "Du musst zwei Spielernamen angeben.");
                     return true;
@@ -272,6 +274,16 @@ public class ZuweisungsBefehle implements CommandExecutor {
                     for (String key : getKeysByValue(wessenKompassZeigtAufWenGerade, alterSpielerName)) {
                         wessenKompassZeigtAufWenGerade_put(key, neuerSpielerName);
                     }
+                }
+            } else if (command.getName().equalsIgnoreCase("start_pause")) {
+                if (manhuntPause) {
+                    Bukkit.broadcastMessage(ManhuntMain.GLOBALE_NACHRICHT_NORMAL + "Manhunt gestartet.");
+                    manhuntPause = false;
+                    startManhuntSpiel(plugin.getServer());
+                } else {
+                    Bukkit.broadcastMessage(ManhuntMain.GLOBALE_NACHRICHT_NORMAL + "Spielgeschehen pausiert.");
+                    manhuntPause = true;
+                    startManhuntPause(plugin.getServer());
                 }
             }
         }

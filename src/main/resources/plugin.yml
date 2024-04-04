@@ -30,6 +30,9 @@ commands:
   change_anzahltotespeedrunnerfürhuntersieg:
     usage: /<command>
     description: Stelle die Anzahl an Speedrunnern ein, die sterben müssen, damit die Hunter gewonnen haben
-  manhunt_spielernamen_austauschen:
+  spielernamen_austauschen:
     usage: /<command>
     description: Tauscht den 1. angegebenen Spielernamen der aktuellen Runde gegen den 2. angegebenen aus
+  start_pause:
+    usage: /<command>
+    description: Stoppt das Spielgeschehen oder aktiviert es wieder. Spieler können sich bei der Pause nur mit OP bewegen

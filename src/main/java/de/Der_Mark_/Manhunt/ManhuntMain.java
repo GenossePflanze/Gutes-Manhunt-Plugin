@@ -2,18 +2,15 @@ package de.Der_Mark_.Manhunt;
 
 import de.Der_Mark_.Manhunt.Listener.*;
 import org.bukkit.*;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
-import static de.Der_Mark_.Manhunt.PluginDatenVerwalten.ladeDaten;
+import static de.Der_Mark_.Manhunt.PluginDatenVerwalten.ladeDatenUndSetzeSpielmodus;
 import static de.Der_Mark_.Manhunt.PluginDatenVerwalten.speichereDaten;
 import static de.Der_Mark_.Manhunt.WichtigeDaten.welcherBlockWarBevorLeitsteinHier;
 import static de.Der_Mark_.Manhunt.WichtigeDaten.wessenKompassZeigtAufWenGerade;
@@ -47,7 +44,7 @@ public class ManhuntMain extends JavaPlugin {
 
         parseValues();
 
-        ladeDaten(this.getServer());
+        ladeDatenUndSetzeSpielmodus(plugin.getServer());
 
         kompasseAktualisieren();
     }
@@ -62,7 +59,8 @@ public class ManhuntMain extends JavaPlugin {
         this.getCommand("gestorbener_speedrunner_remove").setExecutor(zuweisungsBefehle);
         this.getCommand("switch_kompasszeigtzuportal").setExecutor(zuweisungsBefehle);
         this.getCommand("change_anzahltotespeedrunnerfürhuntersieg").setExecutor(zuweisungsBefehle);
-        this.getCommand("manhunt_spielernamen_austauschen").setExecutor(zuweisungsBefehle);
+        this.getCommand("spielernamen_austauschen").setExecutor(zuweisungsBefehle);
+        this.getCommand("start_pause").setExecutor(zuweisungsBefehle);
     }
 
     private void listenerRegistrieren() {
@@ -76,6 +74,7 @@ public class ManhuntMain extends JavaPlugin {
         new KompassTracktErstenGejointenSpeedrunner(this);
         new LetztesPortalEinesSpielersSpeichern(this);
         new WillkommensNachricht(this);
+        new ManhuntPausenListener(this);
     }
 
     private void kompasseAktualisieren() {
